@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "ff.h"
 
 void poly_free (poly_t *m)
@@ -32,7 +33,7 @@ poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff)
     {
         return NULL;
     }
-    uint8_t *tmp = calloce(deg+1, sizeof(*coeff));
+    uint8_t *tmp = calloc(deg+1, sizeof(*coeff));
     if (!tmp)
     {
         poly_free(poly);
@@ -41,6 +42,8 @@ poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff)
     poly->deg = deg;
     memcpy(tmp, coeff, sizeof(*coeff) * (deg + 1));
     poly->coeff = tmp;
+    poly->p = 1;
+    
     return poly;
 
 }
@@ -79,7 +82,7 @@ bool poly_equal (poly_t *f, poly_t *g)
     if (f->p != g->p){
         return false;
     }
-    if (!memcmp(f->coeff, g->coeff, f->deg + 1))
+    if (memcmp(f->coeff, g->coeff, (f->deg + 1) * sizeof(*f->coeff)))
     {
         return false;
     }
