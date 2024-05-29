@@ -88,3 +88,33 @@ bool poly_equal (poly_t *f, poly_t *g)
     }
     return true;
 }
+
+ff_elem *init_ff_elem (poly_t *irr_p, uint8_t p, poly_t *random_p)
+{
+
+}
+
+void modulo_polynom (poly_t *f, uint8_t p)
+{
+    if (!f)
+    {
+        return NULL;
+    }
+    for (size_t i=0; i<=f->deg; i++)
+    {
+        f->coeff[i] %= p;
+    }
+    normalize_polynom(f);
+}
+
+void normalize_polynom (poly_t *f)
+{
+    if (!f)
+    {
+        return NULL;
+    }
+    while ((f->deg > 0) && (f->coeff[f->deg] == 0))
+    {
+        f->deg -= 1;
+    }
+}
