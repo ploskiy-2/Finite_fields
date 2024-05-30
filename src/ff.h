@@ -13,9 +13,8 @@ typedef struct
 /* Struct for finite fields element */
 typedef struct {
     uint8_t p; /*char of field*/
-    poly_t poly; /*irreducible polynom*/
-    uint8_t deg;
-    uint8_t *coeff; /* big-endian, 3*x^2 + 4x + 1 ---> {1,4,3} */
+    poly_t *irr_poly; /*irreducible polynom*/
+    poly_t *ff_p; /*It is a polynomial over the field p^n*/
 } ff_elem;
 
 
@@ -35,7 +34,7 @@ bool poly_equal(poly_t *f, poly_t *g);
 
 /* We want to create element p^n
 We need characteristic of field -> p - prime number
-We need an irreducible polynomial of degree n  --> irr_p 
+We need an irreducible polynomial of degree n over f_p --> irr_p 
 We need an arbitrary polynomial of some degree ---> random_p
 1) take modulo p ratios random_p
 2.1) If the degree random_p is less than irr_p, then random_p is the element of the field p^n

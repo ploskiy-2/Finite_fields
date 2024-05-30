@@ -2,6 +2,27 @@
 #include <string.h>
 #include "ff.h"
 
+/* Inverse and complement element for a in F_p */
+static uint8_t inverse_elem (uint8_t a, uint8_t p);
+static uint8_t complement_elem (uint8_t a, uint8_t p);
+
+static uint8_t complement_elem (uint8_t a, uint8_t p)
+{
+    return (p - a) % p;
+}
+
+static uint8_t inverse_elem (uint8_t a, uint8_t p)
+{
+    for (uint8_t x = 1; x < p; x++)
+    {
+        if ((a * x) % p == 0)
+        {
+            return x;
+        }
+    }
+    return 1;
+}
+
 void poly_free (poly_t *m)
 {
     if (m)
@@ -16,7 +37,8 @@ void ff_elem_free (ff_elem *m)
 {
     if (m)
     {
-        free(m->coeff);
+        poly_free(m->ff_p);
+        poly_free(m->irr_poly);
         free(m);
     }
     return ;
@@ -42,7 +64,6 @@ poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff)
     poly->deg = deg;
     memcpy(tmp, coeff, sizeof(*coeff) * (deg + 1));
     poly->coeff = tmp;
-    poly->p = 1;
     
     return poly;
 
@@ -60,7 +81,6 @@ poly_t *copy_poly (poly_t *pp)
         return NULL;
     }
     
-    copy_pp->p = pp->p;
     copy_pp->deg = pp->deg;
     uint8_t *tmp = calloc(pp->deg + 1, sizeof(*pp->coeff));
     if (!tmp)
@@ -79,9 +99,6 @@ bool poly_equal (poly_t *f, poly_t *g)
     {
         return false;
     }
-    if (f->p != g->p){
-        return false;
-    }
     if (memcmp(f->coeff, g->coeff, (f->deg + 1) * sizeof(*f->coeff)))
     {
         return false;
@@ -91,6 +108,27 @@ bool poly_equal (poly_t *f, poly_t *g)
 
 ff_elem *init_ff_elem (poly_t *irr_p, uint8_t p, poly_t *random_p)
 {
+    if (!irr_p || !random_p)
+    {
+        return NULL;
+    }
+    ff_elem *f = malloc(sizeof(*f));
+    if (!f)
+    {
+        return NULL;
+    }
+    f->p = p;
+    f->irr_poly = irr_p;
+
+    if (random_p->deg < irr_p->deg)
+    {
+        poly_t *c_p = copy_poly(random_p);
+        modulo_polynom(c_p, p);
+        f->ff_p = c_p;
+        return f;
+    }
+
+
 
 }
 
