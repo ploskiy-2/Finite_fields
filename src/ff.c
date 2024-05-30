@@ -128,7 +128,36 @@ ff_elem *init_ff_elem (poly_t *irr_p, uint8_t p, poly_t *random_p)
         return f;
     }
 
+    uint8_t *tmp = calloc(random_p->deg + 1, sizeof(*random_p->coeff));
+    if (!tmp)
+    {
+        ff_elem_free(f);
+        return NULL;
+    }
+    memcpy(tmp, random_p->coeff, sizeof(*random_p->coeff) * (random_p->deg + 1));
+    f->ff_p->deg = irr_p->deg - 1;
 
+    uint8_t n = random_p->deg;
+    uint8_t m = irr_p->deg;
+
+    uint8_t *v = irr_p->coeff;
+
+    uint8_t q;
+    uint8_t w;
+    
+    for (size_t k = (n - m) + 1; k > 0; --k) 
+    {
+        q = tmp[(k - 1) + m] * inverse_elem(v[m], p);
+        for (size_t i = m + (k - 1) + 1; i > (k - 1); --i) 
+        {
+            w = (q * v[(i - 1) - (k - 1)]) % p;
+            w = complement_elem(w, p);
+            tmp[i - 1] = (tmp[i - 1] + w) % p;
+        }
+    }
+    f->ff_p->coeff = tmp;
+    normalize_polynom(f->ff_p);
+    return f;
 
 }
 
