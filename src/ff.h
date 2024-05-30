@@ -6,8 +6,9 @@
 /* Struct for polynomial */
 typedef struct 
 {
+    uint8_t char_p; /* char of field*/
     uint8_t deg; /* degree of the polynomial*/
-    uint8_t *coeff; /* big-endian, 3*x^2 + 4x + 1 ---> {1,4,3} */
+    uint8_t *coeff; /* little-endian, 3*x^2 + 4x + 1 ---> {1,4,3} */
 } poly_t;
 
 /* Struct for finite fields element */
@@ -23,7 +24,7 @@ void poly_free (poly_t *m);
 void ff_elem_free (ff_elem *m);
 
 /* Create polynom from array */
-poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff);
+poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff, uint8_t p);
 
 /* Return copy polynom*/
 poly_t *copy_poly (poly_t *pp);
@@ -42,9 +43,3 @@ We need an arbitrary polynomial of some degree ---> random_p
 2.2) If degrees of random_p >= degree irr_p, then
 random_p  % irr_p --> element of p^n*/
 ff_elem *init_ff_elem (poly_t *irr_p, uint8_t p, poly_t *random_p);
-
-/* Modulo all coefficients by modulo p */
-void modulo_polynom (poly_t *f, uint8_t p);
-
-/* Remove leading zeroes */
-void normalize_polynom (poly_t *f);

@@ -2,9 +2,13 @@
 #include <string.h>
 #include "ff.h"
 
-/* Inverse and complement element for a in F_p */
+/* Inverse and complement element for a over F_p */
 static uint8_t inverse_elem (uint8_t a, uint8_t p);
 static uint8_t complement_elem (uint8_t a, uint8_t p);
+/* Modulo all coefficients by modulo p */
+static void modulo_polynom (poly_t *f, uint8_t p);
+/* Remove leading zeroes */
+static void normalize_polynom (poly_t *f);
 
 static uint8_t complement_elem (uint8_t a, uint8_t p)
 {
@@ -44,7 +48,7 @@ void ff_elem_free (ff_elem *m)
     return ;
 }
 
-poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff)
+poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff, uint8_t p)
 {
     if (!coeff)
     {
@@ -64,7 +68,7 @@ poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff)
     poly->deg = deg;
     memcpy(tmp, coeff, sizeof(*coeff) * (deg + 1));
     poly->coeff = tmp;
-    
+    poly->char_p = p;
     return poly;
 
 }
@@ -80,7 +84,7 @@ poly_t *copy_poly (poly_t *pp)
     {
         return NULL;
     }
-    
+    copy_pp->char_p = pp->char_p;
     copy_pp->deg = pp->deg;
     uint8_t *tmp = calloc(pp->deg + 1, sizeof(*pp->coeff));
     if (!tmp)
@@ -96,6 +100,10 @@ poly_t *copy_poly (poly_t *pp)
 bool poly_equal (poly_t *f, poly_t *g)
 {
     if (f->deg != g->deg)
+    {
+        return false;
+    }
+    if (f->char_p != g->char_p)
     {
         return false;
     }
@@ -161,11 +169,11 @@ ff_elem *init_ff_elem (poly_t *irr_p, uint8_t p, poly_t *random_p)
 
 }
 
-void modulo_polynom (poly_t *f, uint8_t p)
+static void modulo_polynom (poly_t *f, uint8_t p)
 {
     if (!f)
     {
-        return NULL;
+        return ;
     }
     for (size_t i=0; i<=f->deg; i++)
     {
@@ -174,11 +182,11 @@ void modulo_polynom (poly_t *f, uint8_t p)
     normalize_polynom(f);
 }
 
-void normalize_polynom (poly_t *f)
+static void normalize_polynom (poly_t *f)
 {
     if (!f)
     {
-        return NULL;
+        return ;
     }
     while ((f->deg > 0) && (f->coeff[f->deg] == 0))
     {
