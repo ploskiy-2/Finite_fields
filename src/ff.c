@@ -5,6 +5,8 @@
 /* Inverse and complement element for a over F_p */
 static uint8_t inverse_elem (uint8_t a, uint8_t p);
 static uint8_t complement_elem (uint8_t a, uint8_t p);
+/* Normalize degree of the polynomial of the finite field */
+static void normalize_deg(ff_elem_t *a);
 
 static uint8_t complement_elem (uint8_t a, uint8_t p)
 {
@@ -55,6 +57,53 @@ static uint8_t get_deg(size_t length, uint8_t *coeff)
     }
     return deg;
 }
+
+static void normalize_deg(ff_elem_t *a)
+{
+    if (!a)
+    {
+        return;
+    }
+    a->deg = get_deg(a->deg + 1, a->coeff);
+    return;
+}
+
+static bool ff_equal(ff_t *ff1, ff_t *ff2)
+{   
+    if (!ff1 || !ff2)
+    {
+        return false;
+    }
+    if (ff1->deg != ff2->deg)
+    {
+        return false;
+    }
+    int coeff_match = memcmp(ff1->coeff, ff2->coeff, sizeof(uint8_t) * (ff1->deg + 1));
+    if (coeff_match != 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+static ff_elem_t *copy_element(ff_elem_t *a)
+{   
+    if (!a)
+    {
+        return NULL;
+    }
+
+    ff_elem_t *b = ff_get_zero(a->ff);
+    if (!b)
+    {
+        return NULL;
+    }
+    b->ff = a->ff;
+    b->deg = a->deg;
+    memcpy(b->coeff, a->coeff, a->ff->deg);
+    return b;
+}
+
 
 void ff_elem_free (ff_elem_t *m)
 {
@@ -135,4 +184,29 @@ ff_elem_t *init_ff_elem_from_array (size_t length, uint8_t *coeff, ff_t *ff)
     memcpy(f->coeff, coeff, sizeof(uint8_t) * (deg + 1));
     f->deg = deg;
     return f;
+}
+
+ff_elem_t *ff_sum(ff_elem_t *a, ff_elem_t *b)
+{   
+    if (!a || !b) {
+        return NULL;
+    }
+    if (!ff_equal(a->ff, b->ff))
+    {
+        return NULL;
+    }
+    ff_elem_t *c = ff_get_zero(a->ff);
+    if (!c)
+    {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < a->ff->deg; i++)
+    {
+        c->coeff[i] = (a->coeff[i] + b->coeff[i]) % a->ff->char_p;
+    }
+
+    c->deg = a->ff->deg - 1;
+    normalize_deg(c);
+    return c;
 }
