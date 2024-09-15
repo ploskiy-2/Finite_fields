@@ -104,7 +104,6 @@ static ff_elem_t *copy_element(ff_elem_t *a)
     return b;
 }
 
-
 void ff_elem_free (ff_elem_t *m)
 {
     if (m)
@@ -208,5 +207,33 @@ ff_elem_t *ff_sum(ff_elem_t *a, ff_elem_t *b)
 
     c->deg = a->ff->deg - 1;
     normalize_deg(c);
+    return c;
+}
+
+ff_elem_t *negative_ff_elem(ff_elem_t *a)
+{   
+    if (!a)
+    {
+        return NULL;
+    }
+    ff_elem_t *c = malloc(sizeof(*c));
+    if (!c)
+    {
+        return NULL;
+    }
+    uint8_t *coeff = malloc(sizeof(uint8_t) * (a->deg + 1));
+    if (!coeff)
+    {
+        ff_elem_free(c);
+        return NULL;
+    }
+
+    for (size_t i = 0; i <= a->deg; i++)
+    {
+        coeff[i] = complement_elem(a->coeff[i], a->ff->char_p);
+    }
+    c->deg = a->deg;
+    c->ff = a->ff;
+    c->coeff = coeff;
     return c;
 }

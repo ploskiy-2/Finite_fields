@@ -38,3 +38,6 @@ ff_elem_t *ff_get_one(ff_t *ff);
 
 /* Sum of two finite field's elements */
 ff_elem_t *ff_sum(ff_elem_t *a, ff_elem_t *b);
+
+/* To get negative finite field's element */
+ff_elem_t *negative_ff_elem(ff_elem_t *a);
