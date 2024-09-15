@@ -3,21 +3,21 @@
 #include <stdbool.h>
 #include <stdint.h>
                                    
-/* Struct for polynomial */
-typedef struct 
+/* Structure of the finite field */
+typedef struct ff
+{   
+    uint8_t char_p; /* Characteristic of the field */
+    uint8_t deg;    /* Degree of the irreducible polynomial */
+    uint8_t *coeff; /* Coeff of the irreducible polynomial */
+} ff_t;
+
+/* Structure of the element of the finite field */
+typedef struct ff_elem
 {
-    uint8_t char_p; /* char of field*/
-    uint8_t deg; /* degree of the polynomial*/
-    uint8_t *coeff; /* little-endian, 3*x^2 + 4x + 1 ---> {1,4,3} */
-} poly_t;
-
-/* Struct for finite fields element */
-typedef struct {
-    uint8_t p; /*char of field*/
-    poly_t *irr_poly; /*irreducible polynom*/
-    poly_t *ff_p; /*It is a polynomial over the field p^n*/
-} ff_elem;
-
+    ff_t *ff;       /* Finite field */
+    uint8_t deg;    /* Degree of the polynomial in the finite field */
+    uint8_t *coeff; /* Coeff of the polynomial in the finite field */
+} ff_elem_t;
 
 /* Free allocated memory for polynom and element*/
 void poly_free (poly_t *m);
