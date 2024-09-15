@@ -237,3 +237,16 @@ ff_elem_t *negative_ff_elem(ff_elem_t *a)
     c->coeff = coeff;
     return c;
 }
+
+ff_elem_t *ff_sub(ff_elem_t *a, ff_elem_t *b)
+{
+    if (!a || !b)
+    {
+        return NULL;
+    }
+    ff_elem_t *negative_b = negative_ff_elem(b);
+    ff_elem_t *c = ff_sum(a, negative_b);
+    ff_elem_free(negative_b);
+    normalize_deg(c);
+    return c; 
+}
