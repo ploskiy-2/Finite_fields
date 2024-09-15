@@ -19,9 +19,13 @@ typedef struct ff_elem
     uint8_t *coeff; /* Coeff of the polynomial in the finite field */
 } ff_elem_t;
 
-/* Free allocated memory for polynom and element*/
-void poly_free (poly_t *m);
-void ff_elem_free (ff_elem *m);
+/* Particular fields for task*/
+extern ff_t ff_d8_p2;
+extern ff_t ff_d16_p2;
+extern ff_t ff_d32_p2;
+
+/* Free allocated memory for element*/
+void ff_elem_free (ff_elem_t *m);
 
 /* Create polynom from array */
 poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff, uint8_t p);

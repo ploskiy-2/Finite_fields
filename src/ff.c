@@ -37,12 +37,11 @@ void poly_free (poly_t *m)
     return ;
 }
 
-void ff_elem_free (ff_elem *m)
+void ff_elem_free (ff_elem_t *m)
 {
     if (m)
     {
-        poly_free(m->ff_p);
-        poly_free(m->irr_poly);
+        free(m->coeff);
         free(m);
     }
     return ;
