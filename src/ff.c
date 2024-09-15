@@ -7,6 +7,50 @@ static uint8_t inverse_elem (uint8_t a, uint8_t p);
 static uint8_t complement_elem (uint8_t a, uint8_t p);
 /* Normalize degree of the polynomial of the finite field */
 static void normalize_deg(ff_elem_t *a);
+static ff_elem_t *copy_element(ff_elem_t *a);
+/* To check equality of two fields*/
+static bool ff_equal(ff_t *ff1, ff_t *ff2);
+/* Fast power non negative num */
+static uint64_t fast_power(uint8_t x, uint8_t n);
+/* Fast power finite field's element */
+static ff_elem_t *ff_elem_pow(ff_elem_t *a, uint64_t n);
+
+static uint64_t fast_power(uint8_t x, uint8_t n)
+{
+    uint64_t result = 1;
+    uint64_t multiplier = x;
+    while (n > 0)
+    {
+        if (n % 2 != 0)
+        {
+            result *= multiplier;
+        }
+        multiplier *= multiplier;
+        n /= 2;
+    }
+    return result;
+}
+
+static ff_elem_t *ff_elem_pow(ff_elem_t *a, uint64_t n)
+{   
+    ff_elem_t *result = ff_get_one(a->ff);
+    ff_elem_t *tmp_base = copy_element(a);
+    while (n > 0)
+    {
+        if (n % 2 != 0)
+        {
+            ff_elem_t *tmp = ff_multiply(result, tmp_base);
+            ff_elem_free(result);
+            result = tmp;
+        }
+        ff_elem_t *tmp = ff_multiply(tmp_base, tmp_base);
+        ff_elem_free(tmp_base);
+        tmp_base = tmp;
+        n /= 2;
+    }
+    ff_elem_free(tmp_base);
+    return result;
+}
 
 static uint8_t complement_elem (uint8_t a, uint8_t p)
 {
@@ -15,14 +59,7 @@ static uint8_t complement_elem (uint8_t a, uint8_t p)
 
 static uint8_t inverse_elem (uint8_t a, uint8_t p)
 {
-    for (uint8_t x = 1; x < p; x++)
-    {
-        if ((a * x) % p == 0)
-        {
-            return x;
-        }
-    }
-    return 1;
+    return fast_power(a, p - 2) % p;
 }
 
 static void modulo_poly(uint8_t length, uint8_t *coeff, ff_t *ff)
@@ -249,4 +286,62 @@ ff_elem_t *ff_sub(ff_elem_t *a, ff_elem_t *b)
     ff_elem_free(negative_b);
     normalize_deg(c);
     return c; 
+}
+
+int ff_elem_cmp(ff_elem_t *a, ff_elem_t *b)
+{   if (!a || !b)
+    {
+        return 0;
+    }
+    else if (!ff_equal(a->ff, b->ff))
+    {
+        return 0;
+    }
+    else if (a->deg > b->deg)
+    {
+        return -1;
+    }
+    else if (a ->deg < b->deg)
+    {
+        return 1;
+    }
+    else
+    {
+        return memcmp(a->coeff, b->coeff, sizeof(uint8_t) * (a->deg + 1));
+    }
+}
+
+ff_elem_t *ff_multiply(ff_elem_t *a, ff_elem_t *b)
+{
+    if (!a || !b) {
+        return NULL;
+    }
+    if (!ff_equal(a->ff, b->ff))
+    {
+        return NULL;
+    }
+    ff_elem_t *c = ff_get_zero(a->ff);
+    if (!c)
+    {
+        return NULL;
+    }
+    uint8_t max_length = 2 * a->ff->deg;
+    uint8_t tmp_coeff[max_length];
+    memset(tmp_coeff, 0, sizeof(uint8_t) * max_length);
+    for (size_t i = 0; i <= a->deg; i++)
+    {
+        for (size_t j = 0; j <= b->deg; j++)
+        {
+            tmp_coeff[i + j] = (tmp_coeff[i + j] + a->coeff[i] * b->coeff[j]) % a->ff->char_p;
+        }
+    }
+    size_t deg = get_deg(max_length, tmp_coeff);
+
+    modulo_poly(deg + 1, tmp_coeff, a->ff);
+
+    deg = get_deg(deg + 1, tmp_coeff);
+
+    memcpy(c->coeff, tmp_coeff, sizeof(uint8_t) * (deg + 1));
+    c->deg = deg;
+    return c;
 }

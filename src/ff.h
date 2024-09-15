@@ -27,6 +27,12 @@ extern ff_t ff_d32_p2;
 /* Free allocated memory for element*/
 void ff_elem_free (ff_elem_t *m);
 
+/* Compare two elements */
+int ff_elem_cmp(ff_elem_t *a, ff_elem_t *b);
+
+/* To get inverse element*/
+ff_elem_t *inverse_ff_elem(ff_elem_t *a);
+
 /* Create element of the field from array */
 ff_elem_t *ff_elem_from_array(size_t length, uint8_t *coeff, ff_t *ff);
 
@@ -44,3 +50,6 @@ ff_elem_t *negative_ff_elem(ff_elem_t *a);
 
 /* Sub of two finite field's elements */
 ff_elem_t *ff_sub(ff_elem_t *a, ff_elem_t *b);
+
+/* Mult of two finite field's elements */
+ff_elem_t *ff_multiply(ff_elem_t *a, ff_elem_t *b);
