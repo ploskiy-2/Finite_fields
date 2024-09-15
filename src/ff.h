@@ -27,23 +27,11 @@ extern ff_t ff_d32_p2;
 /* Free allocated memory for element*/
 void ff_elem_free (ff_elem_t *m);
 
-/* Create polynom from array */
-poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff, uint8_t p);
+/* Create element of the field from array */
+ff_elem_t *ff_elem_from_array(size_t length, uint8_t *coeff, ff_t *ff);
 
-/* Return copy polynom*/
-poly_t *copy_poly (poly_t *pp);
+/* To get neutral element of the field */
+ff_elem_t *ff_get_zero(ff_t *ff);
 
-/* Check equality of two polynoms */
-bool poly_equal(poly_t *f, poly_t *g);
-
-
-/* We want to create element p^n
-We need characteristic of field -> p - prime number
-We need an irreducible polynomial of degree n over f_p --> irr_p 
-We need an arbitrary polynomial of some degree ---> random_p
-1) take modulo p ratios random_p
-2.1) If the degree random_p is less than irr_p, then random_p is the element of the field p^n
-(after taking modulo)
-2.2) If degrees of random_p >= degree irr_p, then
-random_p  % irr_p --> element of p^n*/
-ff_elem *init_ff_elem (poly_t *irr_p, uint8_t p, poly_t *random_p);
+/* To get neutral element of multiply */
+ff_elem_t *ff_get_one(ff_t *ff);

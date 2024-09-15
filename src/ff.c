@@ -27,16 +27,6 @@ static uint8_t inverse_elem (uint8_t a, uint8_t p)
     return 1;
 }
 
-void poly_free (poly_t *m)
-{
-    if (m)
-    {
-        free(m->coeff);
-        free(m);
-    }
-    return ;
-}
-
 void ff_elem_free (ff_elem_t *m)
 {
     if (m)
@@ -47,29 +37,41 @@ void ff_elem_free (ff_elem_t *m)
     return ;
 }
 
-poly_t *init_poly_from_array (uint8_t deg, uint8_t *coeff, uint8_t p)
+ff_elem_t *ff_get_zero(ff_t *ff)
 {
-    if (!coeff)
+    if (!ff)
     {
         return NULL;
     }
-    poly_t *poly = malloc(sizeof(*poly));
-    if (!poly)
+    ff_elem_t *zero = malloc(sizeof(*zero));
+    if (!zero)
     {
         return NULL;
     }
-    uint8_t *tmp = calloc(deg+1, sizeof(*coeff));
-    if (!tmp)
+    zero->ff = ff;
+    zero->deg = 0;
+    zero->coeff = calloc(ff->deg, sizeof(*zero->coeff));
+    if (!zero->coeff)
     {
-        poly_free(poly);
+        free(zero);
         return NULL;
     }
-    poly->deg = deg;
-    memcpy(tmp, coeff, sizeof(*coeff) * (deg + 1));
-    poly->coeff = tmp;
-    poly->char_p = p;
-    return poly;
+    return zero;
+}
 
+ff_elem_t *ff_get_one(ff_t *ff)
+{
+    if (!ff)
+    {
+        return NULL;
+    }
+    ff_elem_t *one = ff_get_zero(ff);
+    if (!one)
+    {
+        return NULL;
+    }
+    one->coeff[0] = 1;
+    return one;
 }
 
 poly_t *copy_poly (poly_t *pp)
