@@ -56,3 +56,15 @@ ff_elem_t *ff_multiply(ff_elem_t *a, ff_elem_t *b);
 
 /* Div of two finite field's elements */
 ff_elem_t *ff_divide(ff_elem_t *a, ff_elem_t *b);
+
+ff_elem_t *uint8_to_ff_elem(uint8_t x);
+
+ff_elem_t *uint16_to_ff_elem(uint16_t x);
+
+ff_elem_t *uint32_to_ff_elem(uint32_t x);
+
+uint8_t ff_elem_to_uint8(ff_elem_t *a);
+
+uint16_t ff_elem_to_uint16(ff_elem_t *a);
+
+uint32_t ff_elem_to_uint32(ff_elem_t *a);

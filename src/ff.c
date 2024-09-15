@@ -394,3 +394,78 @@ ff_elem_t *ff_divide(ff_elem_t *a, ff_elem_t *b)
   ff_elem_free(inverse_b);
   return result;
 }
+
+ff_elem_t *uint8_to_ff_elem(uint8_t x)
+{
+    ff_elem_t *m = ff_get_zero(&ff_d8_p2);
+    uint8_t deg = 7;
+    size_t i = 0;
+    while (x > 0) {
+        m->coeff[i] = x % 2;
+        x /= 2;
+        i++;
+    }
+    normalize_deg(m);
+    return m;
+}
+
+uint8_t ff_elem_to_uint8(ff_elem_t *a)
+{
+    uint8_t value = 0;
+    uint8_t multiplier = 1;
+    for (size_t i = 0; i <= a->deg; ++i) {
+        value += a->coeff[i] * multiplier;
+        multiplier *= 2;
+    }
+    return value;
+}
+
+ff_elem_t *uint16_to_ff_elem(uint16_t x)
+{
+    ff_elem_t *m = ff_get_zero(&ff_d16_p2);
+    uint8_t deg = 15;
+    size_t i = 0;
+    while (x > 0) {
+        m->coeff[i] = x % 2;
+        x /= 2;
+        i++;
+    }
+    normalize_deg(m);
+    return m;
+}
+
+uint16_t ff_elem_to_uint16(ff_elem_t *a)
+{
+    uint16_t value = 0;
+    uint16_t multiplier = 1;
+    for (size_t i = 0; i <= a->deg; ++i) {
+        value += a->coeff[i] * multiplier;
+        multiplier *= 2;
+    }
+    return value;
+}
+
+ff_elem_t *uint32_to_ff_elem(uint32_t x)
+{
+    ff_elem_t *m = ff_get_zero(&ff_d32_p2);
+    uint8_t deg = 31;
+    size_t i = 0;
+    while (x > 0) {
+        m->coeff[i] = x % 2;
+        x /= 2;
+        i++;
+    }
+    normalize_deg(m);
+    return m;
+}
+
+uint32_t ff_elem_to_uint32(ff_elem_t *a)
+{
+    uint32_t value = 0;
+    uint32_t multiplier = 1;
+    for (size_t i = 0; i <= a->deg; ++i) {
+        value += a->coeff[i] * multiplier;
+        multiplier *= 2;
+    }
+    return value;
+}
