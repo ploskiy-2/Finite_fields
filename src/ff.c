@@ -370,3 +370,27 @@ ff_elem_t *inverse_ff_elem(ff_elem_t *a)
     }
     return ff_elem_pow(a, fast_power(a->ff->char_p, a->ff->deg) - 2);
 }
+
+ff_elem_t *ff_divide(ff_elem_t *a, ff_elem_t *b)
+{
+  if (!a || !b)
+  {
+    return NULL;
+  }
+  if (!ff_equal(a->ff, b->ff))
+  {
+    return NULL;
+  }
+  if (b->deg == 0)
+  {
+    return NULL;
+  }
+  ff_elem_t *inverse_b = inverse_ff_elem(b);
+  if (!inverse_b)
+  {
+    return NULL;
+  }
+  ff_elem_t *result = ff_multiply(a, inverse_b);
+  ff_elem_free(inverse_b);
+  return result;
+}
