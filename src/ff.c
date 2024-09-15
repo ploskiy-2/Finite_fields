@@ -15,6 +15,18 @@ static uint64_t fast_power(uint8_t x, uint8_t n);
 /* Fast power finite field's element */
 static ff_elem_t *ff_elem_pow(ff_elem_t *a, uint64_t n);
 
+// x^8 + x^4 + x^3 + x^2 + 1
+uint8_t ff_d8_p2_coeff[9] = {1, 0, 1, 1, 1, 0, 0, 0, 1};
+ff_t ff_d8_p2 = {.char_p = 2, .deg = 8, .coeff = ff_d8_p2_coeff};
+
+// x^16 + x^9 + x^8 + x^7 + x^6 + x^4 + x^3 + x^2 + 1
+uint8_t ff_d16_p2_coeff[17] = {1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1};
+ff_t ff_d16_p2 = {.char_p = 2, .deg = 16, .coeff = ff_d16_p2_coeff};
+
+// x^32 + x^22 + x^2 + x^1 + 1
+uint8_t ff_d32_p2_coeff[33] = {1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+ff_t ff_d32_p2 = {.char_p = 2, .deg = 32, .coeff = ff_d32_p2_coeff};
+
 static uint64_t fast_power(uint8_t x, uint8_t n)
 {
     uint64_t result = 1;
@@ -344,4 +356,17 @@ ff_elem_t *ff_multiply(ff_elem_t *a, ff_elem_t *b)
     memcpy(c->coeff, tmp_coeff, sizeof(uint8_t) * (deg + 1));
     c->deg = deg;
     return c;
+}
+
+ff_elem_t *inverse_ff_elem(ff_elem_t *a)
+{
+    if (!a)
+    {
+        return NULL;
+    }
+    if ((a->deg == 0) && (a->coeff[0] == 1))
+    {
+        return ff_get_one(a->ff);
+    }
+    return ff_elem_pow(a, fast_power(a->ff->char_p, a->ff->deg) - 2);
 }

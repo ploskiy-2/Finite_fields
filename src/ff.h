@@ -53,3 +53,6 @@ ff_elem_t *ff_sub(ff_elem_t *a, ff_elem_t *b);
 
 /* Mult of two finite field's elements */
 ff_elem_t *ff_multiply(ff_elem_t *a, ff_elem_t *b);
+
+/* Div of two finite field's elements */
+ff_elem_t *ff_divide(ff_elem_t *a, ff_elem_t *b);
