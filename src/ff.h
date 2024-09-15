@@ -28,7 +28,7 @@ extern ff_t ff_d32_p2;
 void ff_elem_free (ff_elem_t *m);
 
 /* Create element of the field from array */
-ff_elem_t *ff_elem_from_array(size_t length, uint8_t *coeff, ff_t *ff);
+ff_elem_t *init_ff_elem_from_array(size_t length, uint8_t *coeff, ff_t *ff);
 
 /* To get neutral element of the field */
 ff_elem_t *ff_get_zero(ff_t *ff);
