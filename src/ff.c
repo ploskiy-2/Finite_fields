@@ -200,7 +200,7 @@ ff_elem_t *ff_get_one(ff_t *ff)
     return one;
 }
 
-ff_elem_t *init_ff_elem_from_array (size_t length, uint8_t *coeff, ff_t *ff)
+ff_elem_t *ff_elem_from_array (size_t length, uint8_t *coeff, ff_t *ff)
 {
     if (!coeff || !ff)
     {
@@ -276,7 +276,7 @@ ff_elem_t *negative_ff_elem(ff_elem_t *a)
         ff_elem_free(c);
         return NULL;
     }
-
+    /* Хотим противоположные по модулю р */
     for (size_t i = 0; i <= a->deg; i++)
     {
         coeff[i] = complement_elem(a->coeff[i], a->ff->char_p);
@@ -405,6 +405,7 @@ ff_elem_t *uint8_to_ff_elem(uint8_t x)
         x /= 2;
         i++;
     }
+    m->deg = deg;
     normalize_deg(m);
     return m;
 }
@@ -430,6 +431,7 @@ ff_elem_t *uint16_to_ff_elem(uint16_t x)
         x /= 2;
         i++;
     }
+    m->deg = deg;
     normalize_deg(m);
     return m;
 }
@@ -455,6 +457,7 @@ ff_elem_t *uint32_to_ff_elem(uint32_t x)
         x /= 2;
         i++;
     }
+    m->deg = deg;
     normalize_deg(m);
     return m;
 }
